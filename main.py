@@ -1,9 +1,9 @@
-from Jarvis import Assistant
+'''run programm'''
+from jarvis import Assistant
 
 jarvis = Assistant()
 
 while True:
     command = jarvis.listen()
     if command:
-        is_done = jarvis.do_command(command=command)
-    
+        jarvis.do_command(command=command)

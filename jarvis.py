@@ -1,17 +1,20 @@
 '''Jarvis Assistant module'''
-import speech_recognition as sr
+import logging
 
+import inflect
+import pyjokes
+import sounddevice as sd
+import speech_recognition as sr
 from TTS.api import TTS
 
-import sounddevice as sd
-
-import pyjokes
+import whether
 
 SAMPLE_RATE = 16000
 
 
 class Assistant():
-    """Assistant
+    """
+    Assistant
     """
 
     def __init__(self) -> None:
@@ -21,9 +24,12 @@ class Assistant():
         self.language = self.tts.languages[0]
         self.recogniser = sr.Recognizer()
         self.recogniser.energy_threshold = 4000
+        self.whether_api = whether.Whether()
+        self.inflect_engine = inflect.engine()
 
     def listen(self) -> str or bool:
-        """listen Listen for audio .
+        """
+        listen Listen for audio .
 
         Returns:
             str or bool: [description]
@@ -65,8 +71,20 @@ class Assistant():
         status = sd.wait()
         return status
 
+    def __number_to_words(self, number):
+        """__number_to_words Convert number to words .
+
+        Args:
+            number ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        return self.inflect_engine.number_to_words(number)
+
     def do_command(self, command: str) -> bool:
-        """do_command Get the pyjokes command .
+        """
+        do_command Get the pyjokes command .
 
         Args:
             command (str): [description]
@@ -74,6 +92,21 @@ class Assistant():
         Returns:
             bool: [description]
         """
-        if "jokes" in command:
+        logging.debug(command)
+        if "joke" in command:
             status = self.say(pyjokes.get_joke())
             print(status)
+        if "weather" in command:
+            wheather_info = self.whether_api.get_current_whether()
+
+            temp = self.__number_to_words(wheather_info['current_temperature'])
+            wind = self.__number_to_words(wheather_info['current_wind'])
+            desc = wheather_info['weather_description']
+
+            answer = f"""
+                Today's whether is {desc}.
+                The Temparature is {temp} degrees Celsius.
+                The Wind is {wind} meters per second.
+            """
+            logging.debug(answer)
+            self.say(answer)

@@ -36,19 +36,19 @@ class Assistant():
         """
         try:
             with sr.Microphone() as source:
-                print("Listening....")
+                logging.debug("Listening....")
                 audio = self.recogniser.listen(source)
             try:
-                print("Recognizing...")
+                logging.debug("Recognizing...")
                 command = self.recogniser.recognize_google(
                     audio, language='en').lower()
-                print(f'You said: {command}')
+                logging.debug('You said: %s',command)
             except Exception as err:
-                print(f'Please try again {err =}')
+                logging.debug('Please try again %s', err)
                 return False
             return command
         except Exception as err:
-            print(f"Please try again {err =}")
+            logging.debug("Please try again %s", err)
             return False
 
     def say(self, text: str) -> bool:

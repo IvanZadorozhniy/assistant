@@ -1,5 +1,6 @@
 '''Jarvis Assistant module'''
 import logging
+import time
 
 import inflect
 import pyjokes
@@ -42,7 +43,7 @@ class Assistant():
                 logging.debug("Recognizing...")
                 command = self.recogniser.recognize_google(
                     audio, language='en').lower()
-                logging.debug('You said: %s',command)
+                logging.debug('You said: %s', command)
             except Exception as err:
                 logging.debug('Please try again %s', err)
                 return False
@@ -95,7 +96,7 @@ class Assistant():
         logging.debug(command)
         if "joke" in command:
             status = self.say(pyjokes.get_joke())
-            print(status)
+            logging.debug(status)
         if "weather" in command:
             wheather_info = self.whether_api.get_current_whether()
 
@@ -110,3 +111,19 @@ class Assistant():
             """
             logging.debug(answer)
             self.say(answer)
+        if "current time" in command:
+            cur_time = time.localtime()
+
+            hours = self.__number_to_words(time.strftime("%H", cur_time))
+            minutes = self.__number_to_words(time.strftime("%M", cur_time))
+            answer = f'''
+                The current time is {hours} hours, and {minutes} minutes
+            '''
+            logging.debug(answer)
+            self.say(answer)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
+    jarvis = Assistant()
+    jarvis.do_command("current time")

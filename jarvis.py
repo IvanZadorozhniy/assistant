@@ -1,7 +1,7 @@
 '''Jarvis Assistant module'''
 import logging
 import time
-
+from datetime import datetime
 import inflect
 import pyjokes
 import sounddevice as sd
@@ -11,6 +11,9 @@ from TTS.api import TTS
 import whether
 
 SAMPLE_RATE = 16000
+
+import pyautogui
+
 
 
 class Assistant():
@@ -93,6 +96,7 @@ class Assistant():
         Returns:
             bool: [description]
         """
+        # FIXME: create methods or class for each command
         logging.debug(command)
         if "joke" in command:
             status = self.say(pyjokes.get_joke())
@@ -121,9 +125,18 @@ class Assistant():
             '''
             logging.debug(answer)
             self.say(answer)
+        if "screenshot" in command:
+            screenshot = pyautogui.screenshot()
+            now = datetime.now()
+            logging.debug(now)
+            screenshot.save(f'{now}_screenshot.png')
+            logging.debug("saved screenshot")
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     jarvis = Assistant()
-    jarvis.do_command("current time")
+    # jarvis.do_command("current time")
+    # jarvis.do_command("tell a joke")
+    # jarvis.do_command("what is the weather")
+    # jarvis.do_command("screenshot")

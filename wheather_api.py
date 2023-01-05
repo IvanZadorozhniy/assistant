@@ -4,13 +4,13 @@ from string import Template
 
 import geocoder
 import requests
-
+import utils
 # TODO: create custom error class for messaging
 # TODO: split url into pieces and white its in settings and api
 # BUG oops something happaned
 
 
-class Whether():
+class WhetherApi():
     """
     Whether class
     """
@@ -19,7 +19,7 @@ class Whether():
         self.__api_key = os.environ.get("WHETHER_API_KEY")
         self.location = geocoder.ip('me')
 
-    def get_current_whether(self):
+    def get_current_wheather(self):
         """
         get_current_whether
         Get current state of current weather .
@@ -47,8 +47,21 @@ class Whether():
             "current_wind": int(float(response['wind']['speed'])),
         }
         return info
+    def get_description_of_current_wheather(self):
+        '''generate description of current wheather'''
+        wheather_info = self.get_current_wheather()
 
+        temp = utils.number_to_words(wheather_info['current_temperature'])
+        wind = utils.number_to_words(wheather_info['current_wind'])
+        desc = wheather_info['weather_description']
+
+        full_description = f"""
+            Today's whether is {desc}.
+            The Temparature is {temp} degrees Celsius.
+            The Wind is {wind} meters per second.
+        """
+        return full_description
 
 if __name__ == "__main__":
-    whether = Whether()
+    whether = WhetherApi()
     whether.get_current_whether()

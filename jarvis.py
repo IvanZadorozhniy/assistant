@@ -1,19 +1,17 @@
 '''Jarvis Assistant module'''
 import logging
-import time
-from datetime import datetime
-import inflect
-import pyjokes
+
+import pyautogui
 import sounddevice as sd
 import speech_recognition as sr
 from TTS.api import TTS
 
-import whether
+import activity_api
+import joke_api
+import time_api
+import wheather_api
 
 SAMPLE_RATE = 16000
-import activity_api
-import pyautogui
-
 
 
 class Assistant():
@@ -28,9 +26,11 @@ class Assistant():
         self.language = self.tts.languages[0]
         self.recogniser = sr.Recognizer()
         self.recogniser.energy_threshold = 4000
-        self.whether_api = whether.Whether()
-        self.inflect_engine = inflect.engine()
+
+        self.wheather_api = wheather_api.WhetherApi()
         self.activity_api = activity_api.ActivityApi()
+        self.joke_api = joke_api.JokeApi()
+        self.time_api = time_api.TimeApi()
 
     def listen(self) -> str or bool:
         """
@@ -76,17 +76,6 @@ class Assistant():
         status = sd.wait()
         return status
 
-    def __number_to_words(self, number):
-        """__number_to_words Convert number to words .
-
-        Args:
-            number ([type]): [description]
-
-        Returns:
-            [type]: [description]
-        """
-        return self.inflect_engine.number_to_words(number)
-
     def do_command(self, command: str) -> bool:
         """
         do_command Get the pyjokes command .
@@ -100,35 +89,19 @@ class Assistant():
         # FIXME: create methods or class for each command
         logging.debug(command)
         if "joke" in command:
-            status = self.say(pyjokes.get_joke())
-            logging.debug(status)
+            answer = self.joke_api.get_joke()
+            self.say(answer)
         if "weather" in command:
-            wheather_info = self.whether_api.get_current_whether()
-
-            temp = self.__number_to_words(wheather_info['current_temperature'])
-            wind = self.__number_to_words(wheather_info['current_wind'])
-            desc = wheather_info['weather_description']
-
-            answer = f"""
-                Today's whether is {desc}.
-                The Temparature is {temp} degrees Celsius.
-                The Wind is {wind} meters per second.
-            """
+            answer = self.wheather_api.get_description_of_current_wheather()
             logging.debug(answer)
             self.say(answer)
         if "current time" in command:
-            cur_time = time.localtime()
-
-            hours = self.__number_to_words(time.strftime("%H", cur_time))
-            minutes = self.__number_to_words(time.strftime("%M", cur_time))
-            answer = f'''
-                The current time is {hours} hours, and {minutes} minutes
-            '''
+            answer = self.time_api.get_description_current_time()
             logging.debug(answer)
             self.say(answer)
         if "screenshot" in command:
             screenshot = pyautogui.screenshot()
-            now = datetime.now()
+            now = self.time_api.get_daytime_now()
             logging.debug(now)
             screenshot.save(f'{now}_screenshot.png')
             logging.debug("saved screenshot")
@@ -143,8 +116,8 @@ class Assistant():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     jarvis = Assistant()
-    # jarvis.do_command("current time")
-    # jarvis.do_command("tell a joke")
-    # jarvis.do_command("what is the weather")
-    # jarvis.do_command("screenshot")
+    jarvis.do_command("current time")
+    jarvis.do_command("tell a joke")
+    jarvis.do_command("what is the weather")
+    jarvis.do_command("screenshot")
     jarvis.do_command("bored")

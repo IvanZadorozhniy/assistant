@@ -7,6 +7,7 @@ import requests
 
 # TODO: create custom error class for messaging
 # TODO: split url into pieces and white its in settings and api
+# BUG oops something happaned
 
 
 class Whether():

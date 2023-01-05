@@ -11,7 +11,7 @@ from TTS.api import TTS
 import whether
 
 SAMPLE_RATE = 16000
-
+import activity_api
 import pyautogui
 
 
@@ -30,6 +30,7 @@ class Assistant():
         self.recogniser.energy_threshold = 4000
         self.whether_api = whether.Whether()
         self.inflect_engine = inflect.engine()
+        self.activity_api = activity_api.ActivityApi()
 
     def listen(self) -> str or bool:
         """
@@ -131,6 +132,12 @@ class Assistant():
             logging.debug(now)
             screenshot.save(f'{now}_screenshot.png')
             logging.debug("saved screenshot")
+        if "bored" in command:
+            answer = self.activity_api.get_some_activity()
+            answer = f'''
+                I think you can {answer}
+            '''
+            self.say(answer)
 
 
 if __name__ == "__main__":
@@ -140,3 +147,4 @@ if __name__ == "__main__":
     # jarvis.do_command("tell a joke")
     # jarvis.do_command("what is the weather")
     # jarvis.do_command("screenshot")
+    jarvis.do_command("bored")

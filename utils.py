@@ -14,4 +14,4 @@ def number_to_words(number):
     Returns:
         [type]: [description]
     """
-    return inflect_engine.number_to_words(number)
+    return inflect_engine.number_to_words(number,andword="")

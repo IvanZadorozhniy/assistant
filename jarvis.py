@@ -10,6 +10,7 @@ import activity_api
 import joke_api
 import time_api
 import wheather_api
+import ip_api
 
 SAMPLE_RATE = 16000
 
@@ -31,6 +32,7 @@ class Assistant():
         self.activity_api = activity_api.ActivityApi()
         self.joke_api = joke_api.JokeApi()
         self.time_api = time_api.TimeApi()
+        self.ip_api = ip_api.IpApi()
 
     def listen(self) -> str or bool:
         """
@@ -111,13 +113,18 @@ class Assistant():
                 I think you can {answer}
             '''
             self.say(answer)
+        if "ip" in command:
+            logging.debug(self.ip_api)
+            answer = self.ip_api.get_info_about_ip()
+            self.say(answer)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     jarvis = Assistant()
-    jarvis.do_command("current time")
-    jarvis.do_command("tell a joke")
-    jarvis.do_command("what is the weather")
-    jarvis.do_command("screenshot")
-    jarvis.do_command("bored")
+    # jarvis.do_command("current time")
+    # jarvis.do_command("tell a joke")
+    # jarvis.do_command("what is the weather")
+    # jarvis.do_command("screenshot")
+    # jarvis.do_command("bored")
+    jarvis.do_command("i want to know ip adress")

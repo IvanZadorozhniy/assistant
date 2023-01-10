@@ -6,11 +6,11 @@ import sounddevice as sd
 import speech_recognition as sr
 from TTS.api import TTS
 
-import activity_api
-import joke_api
-import time_api
-import wheather_api
-import ip_api
+import apis.activity_api as activity_api
+import apis.joke_api as joke_api
+import apis.time_api as time_api
+import apis.wheather_api as wheather_api
+import apis.ip_api as ip_api
 
 SAMPLE_RATE = 16000
 
